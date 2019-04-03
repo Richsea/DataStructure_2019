@@ -1,4 +1,4 @@
-public class LinkedList implements List {
+public class LinkedList implements List{
     private Node start = new Node(-1, null);
 
     @Override
@@ -123,7 +123,7 @@ public class LinkedList implements List {
         Node currentNode = start;
 
         if(start.next == null) {
-            System.out.println("ÀÌ ¸®½ºÆ®ÀÇ Å©±â´Â ºñ¾îÀÖ½À´Ï´Ù.");
+            System.out.println("ì´ ë¦¬ìŠ¤íŠ¸ì˜ í¬ê¸°ëŠ” ë¹„ì–´ìˆìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -163,8 +163,7 @@ public class LinkedList implements List {
         int value;
         Node next;
 
-        public Node(int value, Node next)
-        {
+        public Node(int value, Node next) {
             this.value = value;
             this.next = next;
         }

@@ -1,5 +1,5 @@
 public class BigInt {
-    // À½¼ö°¡ µé¾î¿Ã °æ¿ì´Â ³ªÁß¿¡ Ã³¸®
+    // ìŒìˆ˜ê°€ ë“¤ì–´ì˜¬ ê²½ìš°ëŠ” ë‚˜ì¤‘ì— ì²˜ë¦¬
     List list = new LinkedList();
 
     public String toString()
@@ -7,10 +7,11 @@ public class BigInt {
         int i = 0;
         while(true)
         {
-            if(i > list.size()) break;
-
-
+            if(i >= list.size()) break;
+            i++;
+            System.out.print(this.list.get(list.size() - i));
         }
+        System.out.println();
         return null;
     }
     public BigInt(int n)
@@ -18,8 +19,6 @@ public class BigInt {
         String temp = Integer.toString(n);
         for(int i = 0; i < temp.length(); i++)
         {
-            int newTemp = temp.length();
-            newTemp = temp.charAt(temp.length() - (i + 1)) - '0';
             list.addLast(temp.charAt(temp.length() - (i + 1)) - '0');
         }
     }
@@ -39,7 +38,7 @@ public class BigInt {
         int data;
         boolean uppercase  = false;
 
-        // bigint·Î ¹ŞÀº ¼ıÀÚ°¡ À½¼öÀÎÁö ¾ç¼öÀÎÁö È®ÀÎ
+        // bigintë¡œ ë°›ì€ ìˆ«ìê°€ ìŒìˆ˜ì¸ì§€ ì–‘ìˆ˜ì¸ì§€ í™•ì¸
         /*
         if(this.list.get(list.size()-1) < 0 || y.list.get(y.list.size()-1) < 0)
         {
@@ -50,18 +49,18 @@ public class BigInt {
         }
         */
 
-        // this.bigInt¿Í y.bigInt°¡ µÑ ´Ù ÀÚ¸®¼ö°¡ Á¸Àç ÇÒ ¶§
+        // this.bigIntì™€ y.bigIntê°€ ë‘˜ ë‹¤ ìë¦¬ìˆ˜ê°€ ì¡´ì¬ í•  ë•Œ
         while(this.list.size() > loc && y.list.size() > loc)
         {
-        	data = this.list.get(loc) + y.list.get(loc);
+            data = this.list.get(loc) + y.list.get(loc);
 
-            if(uppercase)   // ÀÚ¸´¼ö ¿Ã¸² ÀÖ´ÂÁö È®ÀÎ(ÀÖÀ»°æ¿ì)
+            if(uppercase)   // ìë¦¿ìˆ˜ ì˜¬ë¦¼ ìˆëŠ”ì§€ í™•ì¸(ìˆì„ê²½ìš°)
             {
                 data ++;
                 uppercase = false;
             }
 
-            if(data > 9)    // µ¡¼À °á°ú°¡ 10 ÀÌ»óÀÏ°æ¿ì
+            if(data > 9)    // ë§ì…ˆ ê²°ê³¼ê°€ 10 ì´ìƒì¼ê²½ìš°
             {
                 data -= 10;
                 uppercase = true;
@@ -74,14 +73,14 @@ public class BigInt {
 
         while(this.list.size() > loc)
         {
-        	data = this.list.get(loc);
-        	
+            data = this.list.get(loc);
+
             if(uppercase)
             {
-            	data += 1;
-            	
-            	if(data > 9) data -= 10;
-            	else	uppercase = false;
+                data += 1;
+
+                if(data > 9) data -= 10;
+                else	uppercase = false;
             }
             newList.addLast(data);
             loc++;
@@ -89,14 +88,14 @@ public class BigInt {
 
         while(y.list.size() > loc)
         {
-        	data = y.list.get(loc);
-        	
+            data = y.list.get(loc);
+
             if(uppercase)
             {
-            	data += 1;
-            	
-            	if(data > 9) data -= 10;
-            	else	uppercase = false;
+                data += 1;
+
+                if(data > 9) data -= 10;
+                else	uppercase = false;
             }
             newList.addLast(data);
             loc++;
@@ -104,18 +103,116 @@ public class BigInt {
 
         list = newList;
         return this;
-        //addFirst¸¦ ÀÌ¿ëÇØ¼­ ³¡¿¡¼­ºÎÅÍ Â÷·Ê·Î °è»ê
+        //addFirstë¥¼ ì´ìš©í•´ì„œ ëì—ì„œë¶€í„° ì°¨ë¡€ë¡œ ê³„ì‚°
     }
 
 
-    //public BigInt minus(BigInt y);
-    /*
+    public BigInt minus(BigInt y)
+    {
+        List newList = new LinkedList();
+        List smallInt, bigInt;
+        boolean checkChange = false;
+        boolean lowerCase = false;
+        int loc = 0;
+        int data;
+
+        if(this.list.size() < y.list.size())    // yì˜ í¬ê¸°ê°€ ë” í°ê²½ìš°
+        {
+            checkChange = true;
+        }else{
+            for(int i=0; i < list.size(); i++)
+            {
+                if(this.list.get(list.size()-(i+1)) < y.list.get(list.size()-(i+1)))
+                {
+                    checkChange = true;
+                    break;
+                }
+            }
+        }
+
+        if(checkChange)
+        {
+            smallInt = this.list;
+            bigInt = y.list;
+        }
+        else
+        {
+            bigInt = this.list;
+            smallInt = y.list;
+        }
+
+        // ë‘˜ ë‹¤ ì¡´ì¬í•˜ëŠ” ê²½ìš°
+        while(smallInt.size() > loc)
+        {
+            data = bigInt.get(loc) + 10 - smallInt.get(loc);
+
+            if(lowerCase)
+            {
+                data--;
+            }
+
+            if(data > 9)
+            {
+                data -= 10;
+                lowerCase = false;
+            }else
+            {
+                lowerCase = true;
+            }
+            newList.addLast(data);
+            loc++;
+        }
+
+        // thisë§Œ ë‚¨ì•„ìˆì„ ê²½ìš°
+        while(bigInt.size() > loc)
+        {
+            data = bigInt.get(loc);
+
+            if(lowerCase)
+            {
+                if(data != 0)
+                {
+                    lowerCase = false;
+                    data--;
+                }
+                else    data = 9;
+            }
+            newList.addLast(data);
+            loc++;
+        }
+
+        if(newList.get(newList.size() -1) == 0)
+        {
+            newList.deleteLast();
+        }
+
+        // B-Aì¸ì§€ A-Bì¸ì§€ í™•ì¸
+        if(checkChange)
+        {
+            int temp = newList.get(newList.size() - 1);
+            newList.deleteLast();
+            newList.addLast(-temp);
+        }
+
+        list = newList;
+
+        return this;
+    }
+
     Boolean equals(BigInt y)
     {
-        while
+        return true;
     }
-    int intValue();
-    int numdigits();
-    BigInt times(int n);
-    */
+    int intValue()
+    {
+        return -1;
+    }
+    int numdigits()
+    {
+        return -1;
+    }
+    BigInt times(int n)
+    {
+        return this;
+    }
 }
