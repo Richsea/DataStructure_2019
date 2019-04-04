@@ -34,69 +34,54 @@ public class BigInt {
     public BigInt plus(BigInt y)
     {
         List newList = new LinkedList();
+        List bigInt, smallInt;
         int loc = 0;
         int data;
         boolean uppercase  = false;
 
-        // bigint로 받은 숫자가 음수인지 양수인지 확인
-        /*
-        if(this.list.get(list.size()-1) < 0 || y.list.get(y.list.size()-1) < 0)
+        if(this.compareTo(y) == 1)
         {
-            if(this.list.get(list.size()-1) < 0 && y.list.get(y.list.size()-1) < 0)
-            {
-
-            }
+            smallInt = this.list;
+            bigInt = y.list;
         }
-        */
-
-        // this.bigInt와 y.bigInt가 둘 다 자리수가 존재 할 때
-        while(this.list.size() > loc && y.list.size() > loc)
+        else
         {
-            data = this.list.get(loc) + y.list.get(loc);
+            smallInt = y.list;
+            bigInt = this.list;
+        }
 
-            if(uppercase)   // 자릿수 올림 있는지 확인(있을경우)
-            {
-                data ++;
-                uppercase = false;
-            }
+        // 작은 수의 최대 자리수까지 계산
+        while(smallInt.size() > loc)
+        {
+            data = bigInt.get(loc) + smallInt.get(loc);
 
-            if(data > 9)    // 덧셈 결과가 10 이상일경우
-            {
+            if(uppercase)   data ++;
+
+            if(data > 9){
                 data -= 10;
                 uppercase = true;
             }
+            else
+            {
+                uppercase = false;
+            }
 
             newList.addLast(data);
             loc++;
         }
 
-
-        while(this.list.size() > loc)
+        while(bigInt.size() > loc)
         {
-            data = this.list.get(loc);
+            data = bigInt.get(loc);
 
             if(uppercase)
             {
                 data += 1;
 
                 if(data > 9) data -= 10;
-                else	uppercase = false;
+                else    uppercase = false;
             }
-            newList.addLast(data);
-            loc++;
-        }
 
-        while(y.list.size() > loc)
-        {
-            data = y.list.get(loc);
-
-            if(uppercase)
-            {
-                data += 1;
-
-                if(data > 9) data -= 10;
-                else	uppercase = false;
-            }
             newList.addLast(data);
             loc++;
         }
@@ -116,40 +101,24 @@ public class BigInt {
         int loc = 0;
         int data;
 
-        if(this.list.size() < y.list.size())    // y의 크기가 더 큰경우
-        {
-            checkChange = true;
-        }else{
-            for(int i=0; i < list.size(); i++)
-            {
-                if(this.list.get(list.size()-(i+1)) < y.list.get(list.size()-(i+1)))
-                {
-                    checkChange = true;
-                    break;
-                }
-            }
-        }
-
-        if(checkChange)
+        if(this.compareTo(y) == 1)
         {
             smallInt = this.list;
             bigInt = y.list;
         }
         else
         {
-            bigInt = this.list;
             smallInt = y.list;
+            bigInt = this.list;
         }
+
 
         // 둘 다 존재하는 경우
         while(smallInt.size() > loc)
         {
             data = bigInt.get(loc) + 10 - smallInt.get(loc);
 
-            if(lowerCase)
-            {
-                data--;
-            }
+            if(lowerCase)   data--;
 
             if(data > 9)
             {
@@ -199,20 +168,118 @@ public class BigInt {
         return this;
     }
 
+    // 두개의 int가 완전히 동일할 경우 true
     Boolean equals(BigInt y)
     {
+        int loc = 0;
+
+        if(this.list.size() != y.list.size())
+        {
+            return false;
+        }
+
+        while(this.list.size() > loc)
+        {
+            if(this.list.get(loc) != y.list.get(loc))
+                return false;
+            loc++;
+        }
+
         return true;
     }
+
+    // 값이 int 타입에서 받을 수 있는 최대값으로 제한
     int intValue()
     {
-        return -1;
+        String max = Integer.toString(Integer.MAX_VALUE);
+        List newList = new LinkedList();
+        double data = 0;
+
+        if(this.list.size() <= max.length())
+        {
+            for(int i = 0; i < this.list.size(); i++)
+            {
+                data *= 10;
+                data += this.list.get(this.list.size()-(i+1));
+            }
+
+            if(data < Integer.MAX_VALUE)
+            {
+                return (int)data;
+            }
+        }
+
+        BigInt temp = new BigInt(Integer.MAX_VALUE);
+        this.list = temp.list;
+
+        return Integer.MAX_VALUE;
     }
+
+    //자리수를 반환
     int numdigits()
     {
-        return -1;
+        return this.list.size();
     }
-    BigInt times(int n)
+
+    // 두 bigInt를 곱하는 함수
+    BigInt times(BigInt y)
     {
-        return this;
+        List newList;
+        BigInt newInt = new BigInt(0);
+        BigInt resultInt = new BigInt(0);
+        int upperNum = 0;
+
+        for(int i = 0; i < y.list.size(); i++)
+        {
+            newList = new LinkedList();
+            for (int j = 0; j < this.list.size(); j++)
+            {
+                int data = this.list.get(j) * y.list.get(i) + upperNum;
+
+                if (data > 9)
+                {
+                    upperNum = (data / 10);
+                    data %= 10;
+                }
+                else
+                    upperNum = 0;
+
+                newList.addLast(data);
+            }
+
+            if (i == 0) {
+                resultInt.list = newList;
+            }
+            else
+            {
+                for (int k = 0; k < i; k++)
+                {
+                    newList.addFirst(0);
+                }
+                newInt.list = newList;
+                resultInt.plus(newInt);
+            }
+        }
+        this.list = resultInt.list;
+
+        return resultInt;
+    }
+
+    private int compareTo(BigInt y)
+    {
+        if(this.list.size() < y.list.size())    // y의 크기가 더 큰경우
+        {
+            return 1;
+        }
+        else{
+            for(int i=0; i < list.size(); i++)
+            {
+                if(this.list.get(list.size()-(i+1)) < y.list.get(list.size()-(i+1)))
+                {
+                    return 1;
+                }
+            }
+        }
+        return 0;
     }
 }
