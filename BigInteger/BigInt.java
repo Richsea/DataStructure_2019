@@ -17,16 +17,39 @@ public class BigInt {
     public BigInt(int n)
     {
         String temp = Integer.toString(n);
-        for(int i = 0; i < temp.length(); i++)
+        if(temp.charAt(0) != '-')
         {
-            list.addLast(temp.charAt(temp.length() - (i + 1)) - '0');
+            for(int i = 0; i < temp.length(); i++)
+            {
+                list.addLast(temp.charAt(temp.length() - (i+1)) - '0');
+            }
         }
+        else
+        {
+            for(int i = 0; i < temp.length() - 2; i++)
+            {
+                list.addLast(temp.charAt(temp.length() - (i+1)) - '0');
+            }
+            list.addLast((temp.charAt(1) - '0') * (-1));
+        }
+
     }
     public BigInt(String n)
     {
-        for(int i = 0; i < n.length(); i++)
+        if(n.charAt(0) != '-')
         {
-            list.addLast(n.charAt(n.length() - (i+1)) - '0');
+            for(int i = 0; i < n.length(); i++)
+            {
+                list.addLast(n.charAt(n.length() - (i+1)) - '0');
+            }
+        }
+        else
+        {
+            for(int i = 0; i < n.length() - 2; i++)
+            {
+                list.addLast(n.charAt(n.length() - (i+1)) - '0');
+            }
+            list.addLast((n.charAt(1)  - '0') * (-1));
         }
 
     }
@@ -34,26 +57,59 @@ public class BigInt {
     public BigInt plus(BigInt y)
     {
         List newList = new LinkedList();
-        List bigInt, smallInt;
+        BigInt bigInt, smallInt;
         int loc = 0;
         int data;
         boolean uppercase  = false;
+        boolean negativeCheck = false;
 
         if(this.compareTo(y) == 1)
         {
-            smallInt = this.list;
-            bigInt = y.list;
+            smallInt = this;
+            bigInt = y;
         }
         else
         {
-            smallInt = y.list;
-            bigInt = this.list;
+            smallInt = y;
+            bigInt = this;
+        }
+
+        // 음수 양수 따지기
+        if(bigInt.isNegative())
+        {
+            bigInt.list.changeLast(bigInt.list.get(bigInt.list.size() - 1) * (-1));
+
+            if(smallInt.isNegative())
+            {
+                smallInt.list.changeLast(smallInt.list.get(smallInt.list.size() - 1) * (-1));
+                negativeCheck = true;
+            }
+            else
+            {
+                bigInt.minus(smallInt);
+                bigInt.list.changeLast(bigInt.list.get(bigInt.list.size()-1) * (-1));
+
+                list = bigInt.list;
+                return bigInt;
+            }
+        }
+        else
+        {
+            if(smallInt.isNegative())
+            {
+                //y값 변경한 후 뺄셈연산 실행
+                smallInt.list.changeLast(smallInt.list.get(smallInt.list.size() - 1) * (-1));
+                bigInt.minus(smallInt);
+
+                list = bigInt.list;
+                return bigInt;
+            }
         }
 
         // 작은 수의 최대 자리수까지 계산
-        while(smallInt.size() > loc)
+        while(smallInt.list.size() > loc)
         {
-            data = bigInt.get(loc) + smallInt.get(loc);
+            data = bigInt.list.get(loc) + smallInt.list.get(loc);
 
             if(uppercase)   data ++;
 
@@ -70,9 +126,9 @@ public class BigInt {
             loc++;
         }
 
-        while(bigInt.size() > loc)
+        while(bigInt.list.size() > loc)
         {
-            data = bigInt.get(loc);
+            data = bigInt.list.get(loc);
 
             if(uppercase)
             {
@@ -86,37 +142,74 @@ public class BigInt {
             loc++;
         }
 
+        if(negativeCheck)
+        {
+            newList.changeLast(newList.get(newList.size() - 1) * (-1));
+        }
+
         list = newList;
         return this;
-        //addFirst를 이용해서 끝에서부터 차례로 계산
     }
 
 
     public BigInt minus(BigInt y)
     {
         List newList = new LinkedList();
-        List smallInt, bigInt;
+        BigInt smallInt, bigInt;
         boolean checkChange = false;
         boolean lowerCase = false;
+        boolean negativeCheck = false;
         int loc = 0;
         int data;
 
         if(this.compareTo(y) == 1)
         {
-            smallInt = this.list;
-            bigInt = y.list;
+            smallInt = this;
+            bigInt = y;
+            checkChange = true;
         }
         else
         {
-            smallInt = y.list;
-            bigInt = this.list;
+            smallInt = y;
+            bigInt = this;
         }
 
+        // 음수 양수 따지기
+        if(bigInt.isNegative())
+        {
+            bigInt.list.changeLast(bigInt.list.get(bigInt.list.size() - 1) * (-1));
+
+            if(smallInt.isNegative())
+            {
+                smallInt.list.changeLast(smallInt.list.get(smallInt.list.size() - 1) * (-1));
+                negativeCheck = true;
+            }
+            else
+            {
+                bigInt.plus(smallInt);
+
+                list = bigInt.list;
+                return bigInt;
+            }
+        }
+        else
+        {
+            if(smallInt.isNegative())
+            {
+                //y값 변경한 후 뺄셈연산 실행
+                smallInt.list.changeLast(smallInt.list.get(smallInt.list.size() - 1) * (-1));
+                bigInt.plus(smallInt);
+                bigInt.list.changeLast(bigInt.list.get(bigInt.list.size()-1) * (-1));
+
+                list = bigInt.list;
+                return bigInt;
+            }
+        }
 
         // 둘 다 존재하는 경우
-        while(smallInt.size() > loc)
+        while(smallInt.list.size() > loc)
         {
-            data = bigInt.get(loc) + 10 - smallInt.get(loc);
+            data = bigInt.list.get(loc) + 10 - smallInt.list.get(loc);
 
             if(lowerCase)   data--;
 
@@ -133,9 +226,9 @@ public class BigInt {
         }
 
         // this만 남아있을 경우
-        while(bigInt.size() > loc)
+        while(bigInt.list.size() > loc)
         {
-            data = bigInt.get(loc);
+            data = bigInt.list.get(loc);
 
             if(lowerCase)
             {
@@ -155,12 +248,16 @@ public class BigInt {
             newList.deleteLast();
         }
 
+        if(negativeCheck)
+        {
+            newList.changeLast(newList.get(newList.size() - 1) * (-1));
+        }
+
         // B-A인지 A-B인지 확인
         if(checkChange)
         {
-            int temp = newList.get(newList.size() - 1);
-            newList.deleteLast();
-            newList.addLast(-temp);
+            int temp = newList.get(newList.size() - 1) * (-1);
+            newList.changeLast(temp);
         }
 
         list = newList;
@@ -227,8 +324,31 @@ public class BigInt {
         List newList;
         BigInt newInt = new BigInt(0);
         BigInt resultInt = new BigInt(0);
+        boolean negativeChange = false;
         int upperNum = 0;
 
+        // 음수 확인
+        if(this.isNegative())
+        {
+            this.list.changeLast(this.list.get(this.list.size() - 1) * (-1));
+            negativeChange = true;
+        }
+
+        if(y.isNegative())
+        {
+            y.list.changeLast(y.list.get(y.list.size() - 1) * (-1));
+
+            if(negativeChange)
+            {
+                negativeChange = false;
+            }
+            else
+            {
+                negativeChange = true;
+            }
+        }
+
+        // * 연산 실행
         for(int i = 0; i < y.list.size(); i++)
         {
             newList = new LinkedList();
@@ -247,6 +367,12 @@ public class BigInt {
                 newList.addLast(data);
             }
 
+            if(upperNum != 0)
+            {
+                newList.addLast(upperNum);
+                upperNum = 0;
+            }
+
             if (i == 0) {
                 resultInt.list = newList;
             }
@@ -262,6 +388,11 @@ public class BigInt {
         }
         this.list = resultInt.list;
 
+        if(negativeChange)
+        {
+            this.list.changeLast(this.list.get(this.list.size() - 1) * (-1));
+        }
+
         return resultInt;
     }
 
@@ -271,15 +402,28 @@ public class BigInt {
         {
             return 1;
         }
-        else{
-            for(int i=0; i < list.size(); i++)
+        else
+        {
+            if(this.list.size() == y.list.size())
             {
-                if(this.list.get(list.size()-(i+1)) < y.list.get(list.size()-(i+1)))
-                {
-                    return 1;
+                for (int i = 0; i < list.size(); i++) {
+                    if (this.list.get(list.size() - (i + 1)) < y.list.get(y.list.size() - (i + 1))) {
+                            return 1;
+                    }
                 }
             }
         }
         return 0;
+    }
+
+    private boolean isNegative()
+    {
+        int loc = 0;
+
+        if(this.list.get(this.list.size() - 1) < 0)
+        {
+            return true;
+        }
+        return false;
     }
 }

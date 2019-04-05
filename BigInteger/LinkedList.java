@@ -159,6 +159,20 @@ public class LinkedList implements List{
         return false;
     }
 
+    @Override
+    public void changeLast(int x)
+    {
+        Node currentNode = start;
+
+        while(currentNode.next != null)
+        {
+            currentNode = currentNode.next;
+        }
+
+        currentNode.setData(x);
+
+    }
+
     public static class Node {
         int value;
         Node next;
@@ -166,6 +180,11 @@ public class LinkedList implements List{
         public Node(int value, Node next) {
             this.value = value;
             this.next = next;
+        }
+
+        void setData(int value)
+        {
+            this.value = value;
         }
     }
 }

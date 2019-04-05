@@ -12,8 +12,8 @@ public class Main {
         System.out.print("bigInt1 + bigInt2 = ");
         bigInt1.plus(bigInt2).toString();
 
-        bigInt1 = new BigInt(13750);
-        bigInt2 = new BigInt("204108273");
+        bigInt1 = new BigInt(-13750);
+        bigInt2 = new BigInt("-204108273");
 
         System.out.print("\nbigInt1 - bigInt2 = ");
         bigInt1.minus(bigInt2).toString();
@@ -29,6 +29,7 @@ public class Main {
         System.out.println(bigInt1.equals(bigInt2));
 
         bigInt1 = new BigInt(13750);
+        bigInt2 = new BigInt("10204108273");
         System.out.print("bigInt1 * bigInt2 = ");
         bigInt1.times(bigInt2).toString();
 
