@@ -29,7 +29,7 @@ public class Main {
         System.out.println(bigInt1.equals(bigInt2));
 
         bigInt1 = new BigInt(13750);
-        bigInt2 = new BigInt("10204108273");
+        bigInt2 = new BigInt("102041018273");
         System.out.print("bigInt1 * bigInt2 = ");
         bigInt1.times(bigInt2).toString();
 

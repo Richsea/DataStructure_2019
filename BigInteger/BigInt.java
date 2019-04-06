@@ -142,6 +142,11 @@ public class BigInt {
             loc++;
         }
 
+        if(uppercase)
+        {
+            newList.addLast(1);
+        }
+
         if(negativeCheck)
         {
             newList.changeLast(newList.get(newList.size() - 1) * (-1));
@@ -407,9 +412,14 @@ public class BigInt {
             if(this.list.size() == y.list.size())
             {
                 for (int i = 0; i < list.size(); i++) {
-                    if (this.list.get(list.size() - (i + 1)) < y.list.get(y.list.size() - (i + 1))) {
-                            return 1;
-                    }
+                    int thisData = this.list.get(list.size() - (i + 1));
+                    int yData = y.list.get(y.list.size() - (i+1));
+
+                    if(thisData == yData)   continue;
+                    else if(thisData < yData)
+                        return 1;
+                    else
+                        return 0;
                 }
             }
         }
