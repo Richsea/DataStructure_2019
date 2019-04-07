@@ -63,6 +63,7 @@ public class BigInt {
         boolean uppercase  = false;
         boolean negativeCheck = false;
 
+        // 작은 수와 큰 수 결정
         if(this.compareTo(y) == 1)
         {
             smallInt = this;
@@ -167,6 +168,7 @@ public class BigInt {
         int loc = 0;
         int data;
 
+        // 작은 수와 큰 수 결정
         if(this.compareTo(y) == 1)
         {
             smallInt = this;
@@ -293,28 +295,52 @@ public class BigInt {
     // 값이 int 타입에서 받을 수 있는 최대값으로 제한
     int intValue()
     {
-        String max = Integer.toString(Integer.MAX_VALUE);
+        BigInt max;
+        BigInt min;
+
+
         List newList = new LinkedList();
         double data = 0;
 
-        if(this.list.size() <= max.length())
+        if(this.list.get(list.size() - 1) < 0)
         {
-            for(int i = 0; i < this.list.size(); i++)
-            {
-                data *= 10;
-                data += this.list.get(this.list.size()-(i+1));
-            }
+            min = new BigInt(Integer.toString(Integer.MIN_VALUE));
 
-            if(data < Integer.MAX_VALUE)
+            if(this.list.size() <= min.list.size())
             {
-                return (int)data;
+                data = this.list.get(this.list.size() - 1);
+                for(int i = 1; i < this.list.size(); i++)
+                {
+                    data *= 10;
+                    data -= this.list.get(this.list.size() - (i+1));
+                }
+
+                if(data > Integer.MIN_VALUE)
+                {
+                    return (int) data;
+                }
             }
+            this.list = min.list;
+            return Integer.MIN_VALUE;
+
         }
+        else
+        {
+            max = new BigInt(Integer.toString(Integer.MAX_VALUE));
 
-        BigInt temp = new BigInt(Integer.MAX_VALUE);
-        this.list = temp.list;
+            if (this.list.size() <= max.list.size()) {
+                for (int i = 0; i < this.list.size(); i++) {
+                    data *= 10;
+                    data += this.list.get(this.list.size() - (i + 1));
+                }
 
-        return Integer.MAX_VALUE;
+                if (data < Integer.MAX_VALUE) {
+                    return (int) data;
+                }
+            }
+            this.list = max.list;
+            return Integer.MAX_VALUE;
+        }
     }
 
     //자리수를 반환
@@ -401,6 +427,7 @@ public class BigInt {
         return resultInt;
     }
 
+    // this bigInt가 bigInt y보다 작은지 확인하는 함수
     private int compareTo(BigInt y)
     {
         if(this.list.size() < y.list.size())    // y의 크기가 더 큰경우
@@ -426,6 +453,7 @@ public class BigInt {
         return 0;
     }
 
+    // bigInt가 음수값을 가지고 있는지 확인하는 함수
     private boolean isNegative()
     {
         int loc = 0;
