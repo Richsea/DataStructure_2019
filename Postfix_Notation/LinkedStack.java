@@ -21,25 +21,26 @@ public class LinkedStack {
 
     public void push(Object object)
     {
-        list.addFirst(object);
+        list.addLast(object);
     }
 
     public int size()
     {
         return list.size();
     }
+
     public String toString()
     {
         String str = "";
         for(int i = 0; i < list.size(); i++)
         {
-            str += String.valueOf(list.get(list.size() - (i+1)).value);
+            str += String.valueOf(list.getData(list.size() - (i+1)));
 
             if(i != list.size()-1) {
                 str += ", ";
             }
         }
-        return str; ]
+        return str;
     }
 
     public Object peekSecond()
@@ -48,12 +49,12 @@ public class LinkedStack {
         {
             return null;
         }
-        Node secondNode = list.get(list.size() - 2);
-        return secondNode.value;
+
+        return list.getData(list.size() - 2);
     }
     public Object bottom()
     {
-        return list.getFirst().value;
+        return list.getData(0);
     }
 
     public static class Node {
