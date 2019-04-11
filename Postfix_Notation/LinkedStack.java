@@ -8,7 +8,9 @@ public class LinkedStack {
 
     public Object peek()
     {
-        return list.getData(list.size());
+        int size = list.size() - 1;
+        if(size < 0)    return null;
+        return list.getData(size);
     }
 
     public Object pop()
