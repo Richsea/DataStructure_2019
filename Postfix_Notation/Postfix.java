@@ -38,9 +38,10 @@ public class Postfix {
     private String changePostfix(String str){
         int current = 0;
         String data = "";
+        boolean isSpace = false;    // 띄어쓰기 여부 체크. 연속된 숫자 입력 오류 체크를 위함
         boolean wasNumber = false;  // 숫자 여부 체크
-        boolean isSpace = false;    // 띄어쓰기 여부 체크
-        int paren_count = 0;    //'(' 짝 확인
+        int stackSize = 0;          // stackSize 체크
+        int paren_count = 0;        //'(' 짝 확인
 
         while(current < str.length())
         {
@@ -48,55 +49,70 @@ public class Postfix {
 
             if(currentChar == '*' || currentChar == '/' || currentChar == '+')
             {
-                if(!wasNumber)     // operator가 연속으로 나오는 에러 처리
+                if(!wasNumber)          //operator가 연속으로 나오는 오류 제거
                 {
                     return null;
                 }
+
+                if(stackSize > paren_count)
+                {
+                    data += " " + stack.pop();
+                    stackSize--;
+                }
+
                 stack.push(currentChar);
+                stackSize++;
                 wasNumber = false;
             }
             else if(currentChar == '-')
             {
-                if (data.charAt(data.length() - 1) == '-') {    // '-' 중복 사용하는 에러 처리
+                if(data.charAt(data.length() - 1) == '-')       // '-'가 부호나 operator 이외에 추가로 사용되는 오류 제거
+                {
                     return null;
                 }
 
-                if (!wasNumber)                 // 음수로 받는 경우 처리
+                if(!wasNumber)
                 {
                     data += " -";
                     wasNumber = true;
                 }
                 else
                 {
+                    if(stackSize > paren_count)
+                    {
+                        data += " " + stack.pop();
+                        stackSize--;
+                    }
+
                     stack.push(currentChar);
                     wasNumber = false;
+                    stackSize++;
                 }
             }
             else if(currentChar > 47 && currentChar < 58)
             {
-                if(isSpace && wasNumber)    // 숫자와 숫자 사이에 operator 없는 에러 처리
+                if(isSpace && wasNumber)
                 {
                     return null;
                 }
 
-                if(!wasNumber)              // 숫자가 시작될 때 " " 실행
+                if(!wasNumber)
                 {
-                   data += " ";
+                    data += " ";
                 }
+
                 data += currentChar;
                 wasNumber = true;
             }
             else if(currentChar == '(')
             {
-                if(wasNumber)               // 숫자 다음에 바로 '(' 입력받는 에러 처리
-                {
+                if(wasNumber)               // 숫자 바로 다음에 '(' 입력이 오는 오류 제거
                     return null;
-                }
+
                 paren_count++;
             }
             else if(currentChar == ')')
             {
-                data += " " + stack.pop();
                 paren_count--;
             }
             else if(currentChar == ' ')
@@ -106,19 +122,22 @@ public class Postfix {
                 continue;
             }
 
+            if(stackSize == paren_count + 2)
+            {
+                data += " " + stack.pop();
+                stackSize--;
+            }
+
             isSpace = false;
             current++;
         }
 
-        if(stack.size() > 2 || !wasNumber || paren_count != 0 || (data.charAt(data.length()-1) < 58 && data.charAt(data.length() - 1) > 47))    // 정확하지 않은 나머지 syntax 처리
+        if(paren_count != 0)    // '(' 와 ')' 짝이 안맞는 오류 제거
         {
             return null;
         }
 
-        while(stack.size() != 0)
-        {
-            data += " " + stack.pop();
-        }
+        data += " " + stack.pop();
 
         return data;
     }
@@ -141,6 +160,12 @@ public class Postfix {
             }
             else if(notationValue == '-' || notationValue == '+' || notationValue == '*' || notationValue == '/')
             {
+                if(notationValue == '-' && (stack.size() == 1 || stack.size() == 0))   // '-'가 operator가 아니라 number의 기호로 사용되었을 경우 체크
+                {
+                    value += notationValue;
+                    current++;
+                    continue;
+                }
                 int num1 = Integer.parseInt(stack.pop().toString());
                 int num2 = Integer.parseInt(stack.pop().toString());
                 int result = 0;
@@ -159,7 +184,7 @@ public class Postfix {
                         result = num2 * num1;
                         break;
 
-                    case '/':
+                    default:
                         result = num2 / num1;
                 }
 
