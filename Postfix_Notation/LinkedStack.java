@@ -58,19 +58,4 @@ public class LinkedStack {
     {
         return list.getData(0);
     }
-
-    public static class Node {
-        Object value;
-        Node next;
-
-        public Node(Object value, Node next) {
-            this.value = value;
-            this.next = next;
-        }
-
-        void setData(int value)
-        {
-            this.value = value;
-        }
-    }
 }
