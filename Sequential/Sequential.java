@@ -106,9 +106,14 @@ public class Sequential extends AbstractSequentialList
                 if(current.next != null)
                 {
                     nextNode.prev = prevNode;
+                    prevNode.next = nextNode;
+                    current = nextNode;
                 }
-                prevNode.next = nextNode;
-                current = prevNode;
+                else
+                {
+                    prevNode.next = nextNode;
+                    current = prevNode;
+                }
             }
 
             @Override
@@ -139,10 +144,10 @@ public class Sequential extends AbstractSequentialList
 
             @Override
             public void add(Object o) {
-                Node newNode = new Node(current.prev, current.next, o);
+                Node newNode = new Node(current, current.next, o);
 
                 current.next = newNode;
-                newNode.prev = current;
+                current.next.next.prev = newNode;
                 // 현재 위치에 삽입
             }
         };

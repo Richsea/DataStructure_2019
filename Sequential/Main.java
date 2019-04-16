@@ -6,84 +6,70 @@ public class Main {
     {
         Sequential seq = new Sequential();
 
-        seq.add(1);
-        seq.add(2);
-        seq.add(3);
+        System.out.println("sequential에 1 입력: " + seq.add(1));
+        System.out.println("sequential에 2 입력: " + seq.add(2));
+        System.out.println("sequential에 3 입력: " + seq.add(3));
         System.out.println("size: " + seq.size());
 
+        System.out.println("<<ListIterator 시작>>");
         ListIterator list = seq.listIterator();
 
-        Scanner scanner = new Scanner(System.in);
+        System.out.println("next: " + list.next());
+        System.out.println("next: " + list.next());
+        System.out.println("next: " + list.next());
+        System.out.println("list의 마지막 데이터의 next: " + list.next());
 
-        while(true)
+        System.out.println("prev: " + list.previous());
+        System.out.println("prev: " + list.previous());
+        System.out.println("list의 처음 데이터의 prev: " + list.previous());
+
+        System.out.println("next: " + list.next());
+        System.out.println("next 데이터의 index: " + list.nextIndex());
+        System.out.println("prev 데이터의 index: " + list.previousIndex());
+
+        System.out.println("현재 데이터 10으로 변경");
+        list.set(10);
+
+        System.out.println("현재 위치에 데이터 20인 Node 추가");
+        list.add(20);
+
+        System.out.println("\n데이터 처음부터 출력");
+        ListIterator list2 = seq.listIterator();
+
+        while(list2.hasNext())
         {
-            System.out.println("Iterator 작업 입력\n 1: next, 2: previous, 3: nextIndex, 4: previousIndex, 5: remove, 6: set, 7: add, 0: end");
-            int num = scanner.nextInt();
-
-            switch(num)
-            {
-                case 1:
-                    System.out.println(list.next());
-                    break;
-                case 2:
-                    System.out.println(list.previous());
-                    break;
-                case 3:
-                    System.out.println(list.nextIndex());
-                    break;
-                case 4:
-                    System.out.println(list.previousIndex());
-                    break;
-                case 5:
-                    list.remove();
-                    break;
-                case 6:
-                    list.set("set");
-                    break;
-                case 7:
-                    list.add("add");
-                    break;
-            }
-            if(num == 0)
-            {
-                break;
-            }
+            System.out.println(list2.next());
         }
 
-        while(list.hasNext())
+        System.out.println("첫 데이터 삭제 확인: ");
+        list.remove();
+
+        list2 = seq.listIterator();
+
+        while(list2.hasNext())
         {
-            System.out.println(list.next());
+            System.out.println(list2.next());
         }
 
-        while(list.hasPrevious())
+        System.out.println("중간 데이터 삭제 확인: ");
+        list.next();
+        list.remove();
+
+        list2 = seq.listIterator();
+
+        while(list2.hasNext())
         {
-            System.out.println(list.previous());
+            System.out.println(list2.next());
         }
 
+        System.out.println("마지막 데이터 삭제 확인: " );
+        list.remove();
 
-        Sequential seq1 = new Sequential();
+        list2 = seq.listIterator();
 
-        seq1.add(1);
-        seq1.add(2);
-        seq1.add(3);
-        ListIterator list2 = seq1.listIterator();
-
-        list2.next();
-        list2.next();
-        list2.next();
-
-
-        System.out.println("set설정: ");
-        list2.set("set");
-        System.out.println("hasPrevious" + list2.hasPrevious());
-        System.out.println("previous Data: " + list2.previous());
-        System.out.println("set설정: ");
-        list2.set("set");
-        System.out.println("hasPrevious" + list2.hasPrevious());
-        System.out.println("previous Data: " + list2.previous());
-        System.out.println("set설정: ");
-        list2.set("set");
-        System.out.println("hasPrevious" + list2.hasPrevious());
-        System.out.println("previous Data: " + list2.previous());
+        while(list2.hasNext())
+        {
+            System.out.println(list2.next());
+        }
     }
 }
