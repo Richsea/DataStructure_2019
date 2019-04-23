@@ -146,7 +146,7 @@ public class Postfix {
     {
         int current = 1;
         String value = "";
-        boolean isNum = false;
+        boolean isNum = false;  // 띄어쓰기가 나올 때 숫자일 경우를 확인하기 위한 변수
 
         System.out.println("\n\nCalculate Value: ");
 
@@ -166,6 +166,7 @@ public class Postfix {
                     current++;
                     continue;
                 }
+
                 int num1 = Integer.parseInt(stack.pop().toString());
                 int num2 = Integer.parseInt(stack.pop().toString());
                 int result = 0;
@@ -190,7 +191,7 @@ public class Postfix {
 
                 System.out.println(notationValue + "...Pop");
 
-                if(current != notation.length() - 1)
+                if(current != notation.length() - 1)    // 마지막 계산이면 push할 필요성 없음 + 출력 양식 변경
                 {
                     System.out.println(num2 + " " + notationValue + " " + num1 + " = " + result + "...push");
                     stack.push(result);
@@ -201,7 +202,7 @@ public class Postfix {
                 }
 
             }
-            else    //숫자데이터
+            else    // 띄어쓰기가 나올 때
             {
                 if(isNum)
                 {
