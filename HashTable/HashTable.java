@@ -30,16 +30,26 @@ public class HashTable implements Map
     @Override
     public Object put(Object key, Object value)
     {
-        //75%이상 채우면 rehashing 실행
+        if(entries.length * 0.75 < size)   rehash();
+
         int hashNum = hash(key);
+        int firstNIL = -1;      // 첫번째 NIL이 발견된 위치 저장
 
         while(entries[hashNum] != null)
         {
             Entry entry = entries[hashNum];
 
-            if(entry == NIL)
+            if(entry == NIL && firstNIL == -1)  // 탐색 도중 NIL 데이터가 발견되었지만, 나중에 같은 key를 가진 데이터가 없을때를 대비.
             {
+                firstNIL = hashNum;
+                break;
+            }
 
+            if(entry.key.equals(key))   // 같은 key를 가진 데이터가 존재하는지 확인
+            {
+                Object oldValue = entry.value;
+                entries[hashNum].value = value;
+                return oldValue;
             }
 
             hashNum ++;
@@ -49,6 +59,16 @@ public class HashTable implements Map
                 hashNum = 0;
             }
         }
+
+        if(firstNIL == -1)
+        {
+            entries[hashNum] = new Entry(key, value);
+        }
+        else
+        {
+            entries[firstNIL] = new Entry(key, value);
+        }
+        size++;
 
         return null;
     }
@@ -83,7 +103,8 @@ public class HashTable implements Map
     }
 
     @Override
-    public int size() {
+    public int size()
+    {
         return size;
     }
 
@@ -95,7 +116,18 @@ public class HashTable implements Map
 
     private void rehash()
     {
+        Entry[] oldEntry = entries;
+        entries = new Entry[2*oldEntry.length];
 
+        for(int i = 0; i < oldEntry.length; i++)
+        {
+            Entry entry = oldEntry[i];
+
+            if(entry == null || entry == NIL) continue;
+            //int newHashNum = this.hash(oldEntry[i]);
+
+            this.put(entry.key, entry.value);
+        }
     }
 
     private class Entry
