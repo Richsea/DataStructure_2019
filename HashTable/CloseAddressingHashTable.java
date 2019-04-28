@@ -1,59 +1,60 @@
 import java.util.*;
 
-public class HashTable implements Map
-{
+public class CloseAddressingHashTable implements Map {
     private final int INITIAL_SIZE = 10;        // 초기 hashMap 크기
     private Entry[] entries = new Entry[INITIAL_SIZE];
-    private final Entry NIL = new Entry(null, null);
+    private boolean needRehash = false;
+
+    CloseAddressingHashTable()
+    {
+        for(int i = 0; i < entries.length; i++)
+        {
+            entries[i] = new Entry(null, null, null);
+        }
+    }
 
     @Override
     public int size()
     {
         int size = 0;
-        Entry entry;
 
+        Entry entry;
         for(int i = 0; i < entries.length; i++)
         {
             entry = entries[i];
-            if(entry != null && entry != NIL)
-                size++;
+
+            if(entry.next == null)   continue;
+
+            while(entry.next != null)
+            {
+                size ++;
+                entry = entry.next;
+            }
         }
         return size;
     }
 
     @Override
-    public boolean isEmpty()
-    {
-        return this.size() == 0;
-    }
+    public boolean isEmpty() {  return this.size() == 0;    }
 
     @Override
-    public boolean containsKey(Object key)
-    {
+    public boolean containsKey(Object key) {
         int hashNum = hash(key);
-        Entry entry;
 
-        while(entries[hashNum] != null)
+        Entry entry = entries[hashNum];
+
+        while(entry.next != null)
         {
-            entry = entries[hashNum];
-
-            if(entry != NIL && entry.key.equals(key))
+            if(entry.next.key.equals(key))
                 return true;
-
-            hashNum++;
-            if(hashNum >= entries.length)
-            {
-                hashNum = 0;
-            }
+            entry = entry.next;
         }
 
         return false;
     }
 
     @Override
-    public boolean containsValue(Object value)
-    {
-
+    public boolean containsValue(Object value) {
         Set<Map.Entry> set = this.entrySet();
         Map.Entry entry;
 
@@ -70,22 +71,15 @@ public class HashTable implements Map
     public Object get(Object key)
     {
         int hashNum = hash(key);
-        Entry entry;
 
-        while(entries[hashNum] != null)
+        Entry entry = entries[hashNum];
+
+        while(entry.next != null)
         {
-            entry = entries[hashNum];
+            if(entry.next.key.equals(key))
+                return entry.next.value;
 
-            if(entry != NIL && entry.key.equals(key))
-            {
-                return entry.value;
-            }
-
-            hashNum++;
-            if(hashNum >= entries.length)
-            {
-                hashNum = 0;
-            }
+            entry = entry.next;
         }
 
         return null;
@@ -94,82 +88,58 @@ public class HashTable implements Map
     @Override
     public Object put(Object key, Object value)
     {
-        if(entries.length * 0.7 < this.size())   rehash();
+        if(needRehash) rehash();
 
         int hashNum = hash(key);
-        int firstNIL = -1;      // 첫번째 NIL이 발견된 위치 저장
-        Entry entry;
 
-        while(entries[hashNum] != null)
+        Entry entry = entries[hashNum];
+        int countLength = 0;
+
+        while(entry.next != null)
         {
-            entry = entries[hashNum];
-
-            if(entry == NIL && firstNIL == -1)  // 탐색 도중 NIL 데이터가 발견되었지만, 나중에 같은 key를 가진 데이터가 없을때를 대비.
+            if(entry.next.key.equals(key))
             {
-                firstNIL = hashNum;
-                hashNum++;
-                continue;
-            }
-
-            if(entry.key.equals(key))   // 같은 key를 가진 데이터가 존재하는지 확인
-            {
-                Object oldValue = entry.value;
-                entries[hashNum].value = value;
+                Object oldValue = entry.next.value;
+                entry.next.value = value;
                 return oldValue;
             }
-
-            hashNum ++;
-
-            if(hashNum >= entries.length)
-            {
-                hashNum = 0;
-            }
+            entry = entry.next;
+            countLength++;
         }
 
-        if(firstNIL == -1)
-        {
-            entries[hashNum] = new Entry(key, value);
-        }
-        else
-        {
-            entries[firstNIL] = new Entry(key, value);
-        }
+        Entry newEntry = new Entry(key, value, null);
+        entry.next = newEntry;
 
-        return entries[hashNum];
+        if(entries.length < countLength)
+            needRehash = true;
+
+        return newEntry.value;
     }
 
     @Override
     public Object remove(Object key)
     {
         int hashNum = hash(key);
-        Entry entry;
 
-        while(entries[hashNum] != null)
+        Entry entry = entries[hashNum];
+
+        while(entry.next != null)
         {
-            entry = entries[hashNum];
-
-            if(entry != NIL && entry.key.equals(key))
+            if(entry.next.key.equals(key))
             {
-                Object oldValue = entry.value;
+                Object oldValue = entry.next.value;
+                entry.next = entry.next.next;
 
-                entries[hashNum] = NIL;
                 return oldValue;
             }
-
-            hashNum++;
-
-            if(hashNum >= entries.length)
-            {
-                hashNum = 0;
-            }
+            entry = entry.next;
         }
 
         return null;
     }
 
     @Override
-    public void putAll(Map m)
-    {
+    public void putAll(Map m) {
         int mapSize = m.size();
 
         if(mapSize == 0) throw new NullPointerException();
@@ -184,37 +154,45 @@ public class HashTable implements Map
     }
 
     @Override
-    public void clear() {   entries = new Entry[INITIAL_SIZE];  }
+    public void clear()
+    {
+        entries = new Entry[INITIAL_SIZE];
+        for(int i = 0; i < entries.length; i++)
+        {
+            entries[i] = new Entry(null, null, null);
+        }
+    }
 
     @Override
-    public Set keySet()
-    {
+    public Set keySet() {
         Set set = new HashSet();
         Entry entry;
 
         for(int i = 0; i < this.entries.length; i++)
         {
             entry = entries[i];
-            if(entry != null && entry != NIL)
+
+            while(entry.next != null)
             {
-                set.add(entry.key);
+                set.add(entry.next.key);
+                entry = entry.next;
             }
         }
         return set;
     }
 
     @Override
-    public Collection values()
-    {
+    public Collection values() {
         Collection collection = new HashSet<>();
         Entry entry;
 
         for(int i = 0; i < this.entries.length; i++)
         {
             entry = entries[i];
-            if(entry != null && entry != NIL)
+            while(entry.next != null)
             {
-                collection.add(entry.value);
+                collection.add(entry.next.value);
+                entry = entry.next;
             }
         }
 
@@ -232,17 +210,18 @@ public class HashTable implements Map
         for(int i = 0; i < this.entries.length; i++)
         {
             entry = entries[i];
-            if(entry != null && entry != NIL)
+
+            while(entry.next != null)
             {
-                set.add(Map.entry(entry.key, entry.value));
+                set.add(Map.entry(entry.next.key, entry.next.value));
+                entry = entry.next;
             }
         }
 
-        if(set.isEmpty())   return null;
+        if(set.isEmpty()) return null;
 
         return set;
     }
-
 
     private int hash(Object key)
     {
@@ -250,28 +229,36 @@ public class HashTable implements Map
         return (key.hashCode() & 0x7FFFFFFF) % entries.length;
     }
 
-
     private void rehash()
     {
         Set<Map.Entry> set = this.entrySet();
         entries = new Entry[2*entries.length];
+        needRehash = false;
+
+        for(int i = 0; i < entries.length; i++)
+        {
+            entries[i] = new Entry(null, null, null);
+        }
 
         Map.Entry entry;
         for(Iterator iterator = set.iterator(); iterator.hasNext();) {
             entry = (Map.Entry) iterator.next();
             this.put(entry.getKey(), entry.getValue());
         }
+
     }
 
     private class Entry
     {
         Object key;
         Object value;
+        Entry next;
 
-        Entry(Object key, Object value)
+        Entry(Object key, Object value, Entry next)
         {
             this.key = key;
             this.value = value;
+            this.next = next;
         }
     }
 }
