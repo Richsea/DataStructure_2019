@@ -24,6 +24,9 @@ public class Main {
                 queue.addLast(tree.getLeft());
             }
         }
+        tree.setRight(new BinaryTree(11));
+        tree.getRight().setLeft(new BinaryTree(12));
+        tree.getRight().setRight(new BinaryTree(13));
 
         PrintTree print = new PrintTree(root);
         System.out.println("[level order print]");
