@@ -56,84 +56,83 @@ public class BinarySearchTree {
 
     public boolean delete(int value)
     {
-        Node newRoot;
+        Node newRoot = root;
+        Node parent = newRoot;
+        boolean isLeft = false;
 
-        if(this.contains(value))
+        // root가 delete 될 경우
+        if(newRoot.getKey() == value)
         {
-            newRoot = root;
-            Node successor;
-
-            newRoot = search(value);
-
-             if(newRoot.getRight() != null)
+            if(newRoot.getRight() == null)
             {
-                successor = newRoot.getRight();
-
-                if(successor.getLeft() == null)
-                {
-                    newRoot.setKey(successor.getKey());
-                    newRoot.setRight(successor.getRight());
-
-                    return true;
-                }
-
-                while(successor.getLeft().getLeft() != null)
-                {
-                    successor = successor.getLeft();
-                }
-                //데이터 설정
-                newRoot.setKey(successor.getLeft().getKey());
-                if(successor.getLeft().getRight() != null)
-                    successor.setLeft(successor.getLeft().getRight());
+                if(newRoot.getLeft() == null)
+                    root = null;
                 else
-                    successor.setLeft(null);
+                    root = root.getLeft();
             }
-            else if(newRoot.getLeft() != null)
+            else if(newRoot.getLeft() == null)
             {
-                successor = newRoot.getLeft();
-
-                if(successor.getRight() == null)
-                {
-                    newRoot.setKey(successor.getKey());
-                    newRoot.setLeft(successor.getLeft());
-
-                    return true;
-                }
-
-                while(successor.getRight().getRight() != null)
-                {
-                    successor = successor.getRight();
-                }
-
-                newRoot.setKey(successor.getRight().getKey());
-                if(successor.getRight().getLeft() != null)
-                    successor.setRight(successor.getRight().getLeft());
-                else
-                    successor.setRight(null);
-
+                root = root.getRight();
             }
             else
             {
-                Node temp = root;
-                while(true)
-                {
-                    if(temp.getKey() < newRoot.getKey())
-                    {
-                        temp.getLeft().getLeft() != null
-                    }
-                }
 
-                newRoot = null;
             }
-            return true;
         }
 
+        while(newRoot.getKey() != value)
+        {
+            if(value < newRoot.getKey())
+            {
+                if(newRoot.getLeft() == null) return false;
+                parent = newRoot;
+                newRoot = newRoot.getLeft();
+                isLeft = true;
+            }
+            else
+            {
+                if(newRoot.getRight() == null) return false;
+                parent = newRoot;
+                newRoot = newRoot.getRight();
+                isLeft = false;
+            }
+        }
+
+        if(newRoot.getRight() == null)
+        {
+            if(newRoot.getLeft() == null)   // newRoot의 child가 둘 다 null일 경우
+                newRoot = null;
+            else                            // newRoot의 leftChild만 null이 아닌 경우
+                newRoot = newRoot.getLeft();
+
+            if(isLeft)
+                parent.setLeft(newRoot);
+            else
+                parent.setRight(newRoot);
+        }
+        else if(newRoot.getLeft() == null)
+        {
+            newRoot = newRoot.getRight();
+            // newRoot의 rightChild만 존재
+            if(isLeft)
+                parent.setLeft(newRoot);
+            else
+                parent.setRight(newRoot);
+        }
+        else
+        {
+            newRoot = getSuccessor(newRoot);
+            // 둘 다 존재할 때
+            // successor 찾기.
+        }
+
+
+        return true;
         /*
         rightNode 존재 -> rightNode의 leftNode의 LeftNode의 ....
         rightNode 존재x && leftNode 존재 -> leftNode의 rightNode의 rightNode의 rightNode ...
         leftNode & rightNode 둘다 존재 x -> 끝
          */
-        return false;
     }
 
     private Node search(int value)
@@ -155,61 +154,43 @@ public class BinarySearchTree {
         }
         return newRoot;
     }
-    private Node searchParent(int value)
+
+    private Node getSuccessor(Node root)
     {
         Node newRoot = root;
+        Node result = null;
 
-        if(newRoot == null)
-            return newRoot;
-
-        while(true)
+        if(newRoot.getRight().getLeft() == null)
         {
-            if(value < newRoot.getKey())
-            {
-                if(newRoot.getLeft().getKey() == value)
-                {
-
-                }
-                if(newRoot.getRight().getKey() == value)
-                {
-
-                }
-                if(newRoot.getLeft().getLeft() != null && newRoot.getLeft().getRight() != null)
-                {
-
-                }
-            }
-            else if(value > newRoot.getKey())
-            {
-
-            }
-            if(newRoot.getLeft() != null)
-            {
-
-            }
-            if(value < newRoot.getKey())
-            {
-                if(newRoot.getLeft() != null)
-            }
-            if(newRoot.getLeft() != null)
-            {
-
-            }
-        }
-        while(newRoot.getKey() != value)
-        {
-            if (value < newRoot.getKey())
-            {
-                if (newRoot.getLeft() != null) { newRoot = newRoot.getLeft(); }
-                else {  return null;   }
-            }
+            if(newRoot.getRight().getRight() == null)
+                result = null;
             else
             {
-                if(newRoot.getRight() != null) { newRoot = newRoot.getRight(); }
-                else { return null; }
+                result = newRoot.getRight();
+                newRoot = newRoot.getRight().getRight();
             }
         }
-        return newRoot;
+        else
+        {
+            newRoot = newRoot.getRight();
+
+            while(newRoot.getLeft().getLeft() != null)
+            {
+                newRoot = newRoot.getLeft();
+            }
+
+            // successor의 child가 둘 다 존재하지 않을 경우
+            if(newRoot.getLeft().getRight() == null)
+            {
+                newRoot.setLeft(null);
+            }
+            else    // successor의 right child가 존재하는 경우
+            {
+                parent.setLeft(newRoot.getLeft().getRight());
+            }
+        }
+
+
     }
 
     public class Node
