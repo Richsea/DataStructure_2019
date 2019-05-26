@@ -34,7 +34,7 @@ public class Main {
         bTree.insert(80);
 
         bTree.delete(77);
-        // 여기까진 정상
+
         bTree.delete(80);   //.right.left가 존재 x + .right.right존재
         bTree.delete(88);   //.right.left가 존재 x + .right.right도 존재 x
 
@@ -42,6 +42,24 @@ public class Main {
         AVLTree Test
          */
         AVLTree avlTree = new AVLTree();
+
+        avlTree.insert(55);
+        avlTree.insert(33);
+        avlTree.insert(66);
+        avlTree.insert(20);
+        avlTree.insert(44);
+        avlTree.insert(60);
+        avlTree.insert(80);
+        avlTree.insert(88);
+        avlTree.insert(15);
+        avlTree.insert(40);
+        avlTree.insert(50);
+        avlTree.insert(38);
+        avlTree.insert(42);
+        avlTree.insert(52);
+
+        avlTree.insert(35);
+
         avlTree.insert(0);
         avlTree.insert(1);
         avlTree.insert(2);
@@ -51,6 +69,7 @@ public class Main {
         avlTree.insert(6);
 
         avlTree.inOrder();
+        System.out.println("");
         avlTree.preOrder();
     }
 }
