@@ -60,6 +60,8 @@ public class BinarySearchTree {
         Node parent = newRoot;
         boolean isLeft = false;
 
+        if(root == null) return false;
+
         // root가 delete 될 경우
         if(newRoot.getKey() == value)
         {
@@ -76,7 +78,7 @@ public class BinarySearchTree {
             }
             else
             {
-
+                root.setKey(this.getSuccessor(newRoot).getKey());
             }
         }
 
@@ -121,7 +123,7 @@ public class BinarySearchTree {
         }
         else
         {
-            newRoot = getSuccessor(newRoot);
+            newRoot.setKey(this.getSuccessor(newRoot).getKey());
             // 둘 다 존재할 때
             // successor 찾기.
         }
@@ -138,6 +140,8 @@ public class BinarySearchTree {
     private Node search(int value)
     {
         Node newRoot = root;
+
+        if(root == null) return null;
 
         while(newRoot.getKey() != value)
         {
@@ -158,17 +162,17 @@ public class BinarySearchTree {
     private Node getSuccessor(Node root)
     {
         Node newRoot = root;
-        Node result = null;
+        Node result;
 
         if(newRoot.getRight().getLeft() == null)
         {
+            //result = new Node(newRoot.getRight().getKey(), newRoot.getLeft(), newRoot.getRight());
+            result = newRoot.getRight();
+
             if(newRoot.getRight().getRight() == null)
-                result = null;
+                newRoot.setRight(null);
             else
-            {
-                result = newRoot.getRight();
-                newRoot = newRoot.getRight().getRight();
-            }
+                newRoot.setRight(newRoot.getRight().getRight());
         }
         else
         {
@@ -179,6 +183,8 @@ public class BinarySearchTree {
                 newRoot = newRoot.getLeft();
             }
 
+            result = newRoot.getLeft();
+
             // successor의 child가 둘 다 존재하지 않을 경우
             if(newRoot.getLeft().getRight() == null)
             {
@@ -186,11 +192,11 @@ public class BinarySearchTree {
             }
             else    // successor의 right child가 존재하는 경우
             {
-                parent.setLeft(newRoot.getLeft().getRight());
+                newRoot.setLeft(newRoot.getLeft().getRight());
             }
         }
 
-
+        return result;
     }
 
     public class Node
