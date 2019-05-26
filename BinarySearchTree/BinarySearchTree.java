@@ -115,8 +115,6 @@ public class BinarySearchTree {
         else
         {
             newRoot = new Node(this.getSuccessor(newRoot).getKey(), newRoot.getLeft(), newRoot.getRight());
-            //newRoot.setKey(this.getSuccessor(newRoot).getKey());
-            // 정상 작동 확인 후 삭제 요망
         }
 
         if(isLeft)

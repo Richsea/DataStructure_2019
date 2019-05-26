@@ -1,6 +1,9 @@
 public class Main {
     public static void main(String[] args)
     {
+        /*
+        BinarySearchTree test
+         */
         BinarySearchTree bTree = new BinarySearchTree();
 
         bTree.insert(55);
@@ -34,5 +37,20 @@ public class Main {
         // 여기까진 정상
         bTree.delete(80);   //.right.left가 존재 x + .right.right존재
         bTree.delete(88);   //.right.left가 존재 x + .right.right도 존재 x
+
+        /*
+        AVLTree Test
+         */
+        AVLTree avlTree = new AVLTree();
+        avlTree.insert(0);
+        avlTree.insert(1);
+        avlTree.insert(2);
+        avlTree.insert(3);
+        avlTree.insert(4);
+        avlTree.insert(5);
+        avlTree.insert(6);
+
+        avlTree.inOrder();
+        avlTree.preOrder();
     }
 }

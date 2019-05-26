@@ -1,88 +1,173 @@
 public class AVLTree {
 
     private AVLNode root;
+    private AVLNode balanceRoot;
 
     public void insert(int data)
     {
-        this.insert(data, root);
+        balanceRoot = root;
+        root = this.insert(data, root);
     }
 
     private AVLNode insert(int x, AVLNode t)
     {
+        AVLNode parent = balanceRoot;
         AVLNode newNode = t;
 
         if(t == null)
-        {
             return new AVLNode(x);
-        }
+
+        if(root.key == x)
+            return root;
 
         if(x < t.key)
         {
-            AVLNode addNode = this.insert(x, newNode.left);
-            newNode.left = addNode;
-
+            newNode.left = insert(x, newNode.left);
         }
         else
         {
-            this.insert(x, newNode.right);
+            newNode.right = insert(x, newNode.right);
         }
 
-        // rotate 사용 this.rotateLeft();
-        return null;
+        balanceRoot = newNode;
+        this.rebalance();
+        balanceRoot = parent;
+
+        return newNode;
     }
 
-    //현재 3개인 경우만 생각해서 작성함
     private void rotateLeft()
     {
-        AVLNode newNode = root;
-
-        // height를 따져야 하지 않을까...? + 3개가 아니라 .right.left가 존재하는 경우도 있지 않을까...?
-        // 1자로 되어있는 조건에대해서 좀 더 주의해서 생각해보자.
-        if(newNode.right.left == null)  // 일자로 되어 있는 경우
-        {
-            AVLNode newRoot = newNode.right;
-            newRoot.left = newNode;
-            newNode.right = null;
-            root = newRoot;
-
-            return;
-        }
-
-        this.rotateRight();
-        newNode = root;
-        this.rotateLeft();
+        AVLNode newLeft = new AVLNode(balanceRoot.key);
+        newLeft.left = balanceRoot.left;
+        newLeft.right = balanceRoot.right.left;         // left rotate시 기존 right.left의 위치에 있던 Node들은 right에 옮기는 것이 가장 합당함.
+        newLeft.height = 1 + Math.max(balanceRoot.left.height, balanceRoot.right.height);
+        balanceRoot.left = newLeft;
+        balanceRoot.key = balanceRoot.right.key;
+        balanceRoot.right = balanceRoot.right.right;
     }
 
     // rotate binary tree node with right child
     private void rotateRight()
     {
-        AVLNode newNode = root;
-
-        if(newNode.left.right == null)
-        {
-            AVLNode newRoot = newNode.left;
-            newRoot.right = newNode;
-            newNode.right = null;
-            root = newRoot;
-
-            return;
-        }
-
-        this.rotateLeft();
-        newNode = root;
-        this.rotateRight();
+        AVLNode newRight = new AVLNode(balanceRoot.key);
+        newRight.left = balanceRoot.left.right;             // right rotate시 기존 left.right의 위치에 있던 Node들은 left에 옮기는 것이 가장 합당함
+        newRight.right = balanceRoot.right;
+        newRight.height = 1 + Math.max(balanceRoot.left.height, balanceRoot.right.height);
+        balanceRoot.key = balanceRoot.left.key;
+        balanceRoot.left = balanceRoot.left.left;
     }
 
     public boolean search(int val)
     {
-        // 해당하는 데이터 유무를 찾는 함수
-        return false;
+        AVLNode newNode = root;
+
+        while(newNode.key != val)
+        {
+            if(val < newNode.key)
+            {
+                if(newNode.left == null) return false;
+                newNode = newNode.left;
+            }
+            else
+            {
+                if(newNode.right == null) return false;
+                newNode = newNode.right;
+            }
+        }
+        return true;
+    }
+
+    private void rebalance()
+    {
+        //banaceRoot.right와 left가 존재하는지 따져야됨
+        if(balanceRoot.right.height > balanceRoot.left.height + 1)
+        {
+            if(balanceRoot.right.left.height > balanceRoot.right.right.height)
+            {
+                AVLNode temp = balanceRoot;
+                balanceRoot = balanceRoot.right;
+                this.rotateRight();
+                balanceRoot = temp;
+            }
+            this.rotateLeft();
+        }
+        else if(balanceRoot.left.height > balanceRoot.right.height + 1)
+        {
+            if(balanceRoot.left.right.height > balanceRoot.left.left.height)
+            {
+                AVLNode temp = balanceRoot;
+                balanceRoot = balanceRoot.left;
+                this.rotateLeft();
+                balanceRoot = temp;
+            }
+            this.rotateRight();
+        }
     }
 
     // 탐색 알고리즘
-    public void inOrder(){}
-    public void preOrder(){}
-    public void postOrder(){}
+    public void inOrder()
+    {
+        this.inOrderPrint(root);
+    }
+
+    public void preOrder()
+    {
+        this.preOrderPrint(root);
+    }
+
+    public void postOrder()
+    {
+        this.postOrderPrint(root);
+    }
+
+    private void postOrderPrint(AVLNode root)
+    {
+        if(root == null) return;
+        if(root.left != null)
+        {
+            postOrderPrint(root.left);
+            System.out.print(" -> ");
+        }
+        if(root.right != null)
+        {
+            postOrderPrint(root.right);
+            System.out.print(" -> ");
+        }
+        System.out.print(root.key);
+    }
+
+    private void inOrderPrint(AVLNode root)
+    {
+        if(root == null) return;
+        if(root.left != null)
+        {
+            inOrderPrint(root.left);
+            System.out.print(" -> ");
+        }
+        System.out.print(root.key);
+        if(root.right != null)
+        {
+            System.out.print(" -> ");
+            inOrderPrint(root.right);
+        }
+    }
+
+    private void preOrderPrint(AVLNode root)
+    {
+        if(root == null) return;
+        System.out.print(root.key);
+        if(root.left != null)
+        {
+            System.out.print(" -> ");
+            preOrderPrint(root.left);
+        }
+        if(root.right != null)
+        {
+            System.out.print(" -> ");
+            preOrderPrint(root.right);
+        }
+    }
 
     class AVLNode
     {
