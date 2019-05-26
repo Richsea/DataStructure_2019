@@ -80,6 +80,7 @@ public class BinarySearchTree {
             {
                 root.setKey(this.getSuccessor(newRoot).getKey());
             }
+            return  true;
         }
 
         while(newRoot.getKey() != value)
@@ -106,35 +107,25 @@ public class BinarySearchTree {
                 newRoot = null;
             else                            // newRoot의 leftChild만 null이 아닌 경우
                 newRoot = newRoot.getLeft();
-
-            if(isLeft)
-                parent.setLeft(newRoot);
-            else
-                parent.setRight(newRoot);
         }
         else if(newRoot.getLeft() == null)
         {
             newRoot = newRoot.getRight();
-            // newRoot의 rightChild만 존재
-            if(isLeft)
-                parent.setLeft(newRoot);
-            else
-                parent.setRight(newRoot);
         }
         else
         {
-            newRoot.setKey(this.getSuccessor(newRoot).getKey());
-            // 둘 다 존재할 때
-            // successor 찾기.
+            newRoot = new Node(this.getSuccessor(newRoot).getKey(), newRoot.getLeft(), newRoot.getRight());
+            //newRoot.setKey(this.getSuccessor(newRoot).getKey());
+            // 정상 작동 확인 후 삭제 요망
         }
+
+        if(isLeft)
+            parent.setLeft(newRoot);
+        else
+            parent.setRight(newRoot);
 
 
         return true;
-        /*
-        rightNode 존재 -> rightNode의 leftNode의 LeftNode의 ....
-        rightNode 존재x && leftNode 존재 -> leftNode의 rightNode의 rightNode의 rightNode ...
-        leftNode & rightNode 둘다 존재 x -> 끝
-         */
     }
 
     private Node search(int value)
