@@ -9,7 +9,7 @@ public class Main {
         MergeSort mergeSort = new MergeSort();
         QuickSort quickSort = new QuickSort();
 
-        heapSort.buildHeap(array1, 0, array1.length);
+        heapSort.heapSort(array1);
         array2 = mergeSort.mergeSort(array2);
         quickSort.QuickSort(array3, 0, array3.length);
 

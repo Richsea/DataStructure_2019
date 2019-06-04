@@ -1,6 +1,20 @@
 public class HeapSort {
 
 
+    void heapSort(int[] a)
+    {
+        for(int n = a.length-1; n > 0; n--)
+        {
+            buildHeap(a, 0, n);
+
+            int temp = a[0];
+            a[0] = a[n];
+            a[n] = temp;
+
+            heapify(a, 0, n);
+        }
+    }
+
     void buildHeap(int[] a, int i, int n) {
         if (i >= n / 2) return;
 
